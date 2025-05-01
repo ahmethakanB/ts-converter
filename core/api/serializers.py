@@ -11,6 +11,7 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
         many=True
     )
 
+    #TODO Burada Fazlalık İse Kaldır
     def __init__(self, *args, **kwargs):
         request = kwargs.get('context', {}).get('request')
         if request is not None and hasattr(request, '_odata_select'):

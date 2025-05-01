@@ -8,9 +8,9 @@ def column(title: str, **extra) -> Dict:
     """extra anahtarları doğrudan KÖK’e ekler (istenirse)."""
     base = {
         "title": title,
-        "tableAttributes": {}
+        "tableAttributes": {},
     }
-    base.update(extra)
+    base.update()
     return base
 
 def field(title: str, **extra) -> Dict:
@@ -23,3 +23,5 @@ def field(title: str, **extra) -> Dict:
         "formAttributes": {},  # inputType, required, disabled vs. dekoratörlerle eklenir
         **extra
     }
+
+# TODO modeller için oluştur

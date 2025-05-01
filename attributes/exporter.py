@@ -135,6 +135,8 @@ def export_form_dtos() -> list[str]:
 def export_all_ts(target: Path):
     if not isinstance(target, Path):
         target = Path(target)
+
+        #TODO sectionslar için birer fonksiyon oluştur
     sections = [
         "// AUTO-GENERATED – do not edit by hand",
         """

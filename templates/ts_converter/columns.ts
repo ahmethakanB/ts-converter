@@ -1,5 +1,6 @@
 // AUTO-GENERATED – do not edit by hand
 
+
 export interface Column {
   field: string;
   title: string;
@@ -11,7 +12,7 @@ export interface Column {
 
 export interface FormField {
   field: string;
-  title: string;
+  label: string;
   type: string;
   required?: boolean;
   disabled?: boolean;
@@ -20,213 +21,241 @@ export interface FormField {
 }
 
 
+export interface OrderDetailSerializer {
+  id?: number;
+  name: string;
+  products: any;
+  type: number;
+  start_datetime: string;
+  end_datetime: string;
+  order_type?: string;
+}
+
 export const WorkDetailTableColumns: Column[] = [
   {
-    "field": "id",
     "title": "ID",
-    "typeCode": 9,
     "tableAttributes": {
       "hidden": true
-    }
+    },
+    "typeCode": 9,
+    "field": "id"
   },
   {
-    "field": "name",
     "title": "İş Detayı Adı",
-    "typeCode": 18,
     "tableAttributes": {
       "orderable": true
-    }
-  },
-  {
-    "field": "products",
-    "title": "Ürünler",
-    "typeCode": 1,
-    "tableAttributes": {}
-  },
-  {
-    "field": "type",
-    "title": "Sipariş Tipi",
-    "typeCode": 1,
-    "tableAttributes": {}
-  },
-  {
-    "field": "start_datetime",
-    "title": "Başlangıç Zamanı",
-    "typeCode": 16,
-    "tableAttributes": {}
-  },
-  {
-    "field": "end_datetime",
-    "title": "Bitiş Zamanı",
-    "typeCode": 16,
-    "tableAttributes": {}
-  },
-  {
-    "field": "order_type",
-    "title": "Sipariş Tipi",
+    },
     "typeCode": 18,
+    "field": "name"
+  },
+  {
+    "title": "Ürünler",
+    "tableAttributes": {},
+    "field": "products"
+  },
+  {
+    "title": "Sipariş Tipi",
+    "tableAttributes": {},
+    "field": "type"
+  },
+  {
+    "title": "Başlangıç Zamanı",
+    "tableAttributes": {},
+    "typeCode": 16,
+    "field": "start_datetime"
+  },
+  {
+    "title": "Bitiş Zamanı",
+    "tableAttributes": {},
+    "typeCode": 16,
+    "field": "end_datetime"
+  },
+  {
+    "title": "Sipariş Tipi",
     "tableAttributes": {
       "searchable": false
-    }
+    },
+    "typeCode": 18,
+    "field": "order_type"
   }
-] as const;
+];
 
-export const OrderFormDto_create_Fields = [
+export const OrderFormDto_create_Fields: FormField[] = [
   {
-    "title": "Sipariş Adı",
     "formAttributes": {
       "inputType": 0,
       "required": true
     },
-    "field": "name"
+    "field": "name",
+    "label": "Sipariş Adı",
+    "type": "0"
   },
   {
-    "title": "Açıklama",
     "formAttributes": {
       "inputType": 1
     },
-    "field": "description"
+    "field": "description",
+    "label": "Açıklama",
+    "type": "1"
   },
   {
-    "title": "Başlangıç Zamanı",
     "formAttributes": {
       "inputType": 2,
       "required": true
     },
-    "field": "start_datetime"
+    "field": "start_datetime",
+    "label": "Başlangıç Zamanı",
+    "type": "2"
   },
   {
-    "title": "Bitiş Zamanı",
     "formAttributes": {
       "inputType": 2
     },
-    "field": "end_datetime"
+    "field": "end_datetime",
+    "label": "Bitiş Zamanı",
+    "type": "2"
   },
   {
-    "title": "Sipariş Tipi",
     "formAttributes": {
       "inputType": 3,
       "required": true
     },
-    "field": "type"
+    "field": "type",
+    "label": "Sipariş Tipi",
+    "type": "3"
   },
   {
-    "title": "Ürünler",
     "formAttributes": {
       "inputType": 4
     },
-    "field": "products"
+    "field": "products",
+    "label": "Ürünler",
+    "type": "4"
   }
-] as const;
+];
 
-export const OrderFormDto_update_Fields = [
+export const OrderFormDto_update_Fields: FormField[] = [
   {
-    "title": "ID",
     "formAttributes": {
       "disabled": true,
       "inputType": 5
     },
-    "field": "id"
+    "field": "id",
+    "label": "ID",
+    "type": "5"
   },
   {
-    "title": "Sipariş Adı",
     "formAttributes": {
       "inputType": 0
     },
-    "field": "name"
+    "field": "name",
+    "label": "Sipariş Adı",
+    "type": "0"
   },
   {
-    "title": "Açıklama",
     "formAttributes": {
       "inputType": 1
     },
-    "field": "description"
+    "field": "description",
+    "label": "Açıklama",
+    "type": "1"
   },
   {
-    "title": "Başlangıç Zamanı",
     "formAttributes": {
       "inputType": 2
     },
-    "field": "start_datetime"
+    "field": "start_datetime",
+    "label": "Başlangıç Zamanı",
+    "type": "2"
   },
   {
-    "title": "Bitiş Zamanı",
     "formAttributes": {
       "inputType": 2
     },
-    "field": "end_datetime"
+    "field": "end_datetime",
+    "label": "Bitiş Zamanı",
+    "type": "2"
   },
   {
-    "title": "Sipariş Tipi",
     "formAttributes": {
       "inputType": 3
     },
-    "field": "type"
+    "field": "type",
+    "label": "Sipariş Tipi",
+    "type": "3"
   },
   {
-    "title": "Ürünler",
     "formAttributes": {
       "inputType": 4
     },
-    "field": "products"
+    "field": "products",
+    "label": "Ürünler",
+    "type": "4"
   }
-] as const;
+];
 
-export const OrderFormDto_view_Fields = [
+export const OrderFormDto_view_Fields: FormField[] = [
   {
-    "title": "ID",
     "formAttributes": {
       "disabled": true,
       "inputType": 5
     },
-    "field": "id"
+    "field": "id",
+    "label": "ID",
+    "type": "5"
   },
   {
-    "title": "Sipariş Adı",
     "formAttributes": {
       "inputType": 0,
       "disabled": true
     },
-    "field": "name"
+    "field": "name",
+    "label": "Sipariş Adı",
+    "type": "0"
   },
   {
-    "title": "Açıklama",
     "formAttributes": {
       "inputType": 1,
       "disabled": true
     },
-    "field": "description"
+    "field": "description",
+    "label": "Açıklama",
+    "type": "1"
   },
   {
-    "title": "Başlangıç Zamanı",
     "formAttributes": {
       "inputType": 2,
       "disabled": true
     },
-    "field": "start_datetime"
+    "field": "start_datetime",
+    "label": "Başlangıç Zamanı",
+    "type": "2"
   },
   {
-    "title": "Bitiş Zamanı",
     "formAttributes": {
       "inputType": 2,
       "disabled": true
     },
-    "field": "end_datetime"
+    "field": "end_datetime",
+    "label": "Bitiş Zamanı",
+    "type": "2"
   },
   {
-    "title": "Sipariş Tipi",
     "formAttributes": {
       "inputType": 3,
       "disabled": true
     },
-    "field": "type"
+    "field": "type",
+    "label": "Sipariş Tipi",
+    "type": "3"
   },
   {
-    "title": "Ürünler",
     "formAttributes": {
       "inputType": 4,
       "disabled": true
     },
-    "field": "products"
+    "field": "products",
+    "label": "Ürünler",
+    "type": "4"
   }
-] as const;
+];

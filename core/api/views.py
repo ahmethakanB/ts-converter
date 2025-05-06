@@ -2,10 +2,13 @@ from rest_framework import (
     viewsets,
     filters,
 )
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
-from core.api.serializers import OrderDetailSerializer
-from core.models import Product, Order
+from core.api.serializers import OrderDetailSerializer, ProductSerializer
+from core.models import Product, Order, OrderType
 from core.utils.filters.odata_backend import ODataFilterBackend
 
 
@@ -25,3 +28,24 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Order.objects.select_related("type").prefetch_related("products")
+
+
+class ProductAPI(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class   = ProductSerializer
+    queryset           = Product.objects.all()
+    filter_backends    = (
+        ODataFilterBackend,
+        OrderingFilter,
+        SearchFilter,
+    )
+
+class OrderTypeAPI(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class   = ProductSerializer
+    queryset           = OrderType.objects.all()
+    filter_backends    = (
+        ODataFilterBackend,
+        OrderingFilter,
+        SearchFilter,
+    )

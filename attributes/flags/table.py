@@ -35,3 +35,12 @@ def column_search(fn: Callable[[], Dict]) -> Callable[[], Dict]:
         _ensure_attrs(data)["searchable"] = False
         return data
     return wrapper
+
+def column_null(fn: Callable[[], Dict]) -> Callable[[], Dict]:
+    """@column_null  →  tableAttributes.nullable = True"""
+    @wraps(fn)
+    def wrapper():
+        data = fn()
+        _ensure_attrs(data)["nullable"] = True
+        return data
+    return wrapper

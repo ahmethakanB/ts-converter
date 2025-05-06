@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Product, Order
+from core.models import Product, Order, OrderType
 from core.utils.api import DynamicFieldsModelSerializer
 
 
@@ -44,3 +44,25 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
         if products is not None:
             instance.products.set(products)
         return instance
+
+
+class ProductSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'name',
+            'description',
+            'price',
+            'stock',
+            'is_dismantling',
+            'is_plannable',
+        )
+
+class OrderTypeSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = OrderType
+        fields = (
+            'id',
+            'name',
+        )

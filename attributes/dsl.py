@@ -4,16 +4,14 @@ def _ensure_attrs(col: Dict) -> Dict:
     col.setdefault("tableAttributes", {})
     return col["tableAttributes"]
 
-def column(title: str, **extra) -> Dict:
+def column(*args, **extra) -> Dict:
     """
-    title: Kolon başlığı.
-    extra: İsterseniz statik ek alanlar.
+    @column() veya @column("ignoredTitle", foo=bar) –
+    positional arg (başlık) görmezden gelinir,
+    extra dict içindeki anahtarlar köke eklenir.
     """
     base: Dict = {
-        # API’deki karşılığı "alanIsmi", frontend’te bizi ilgilendiren başlık:
-        # "title": title,
-        # artık tablo attribute’leri bu listede saklanacak:
-        "kolonAttributelar": [],
+        "kolonAttributelar": [],  # attribute listesi
     }
     base.update(extra)
     return base

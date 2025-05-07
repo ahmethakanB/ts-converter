@@ -174,47 +174,76 @@ def export_serializers() -> list[str]:
 
 # 4) tables.ts için Column konfigürasyonları
 def export_table_dtos() -> list[str]:
-    """
-    Her BaseTableDto subclass’ı için şu shape’te bir export oluşturur:
+    import json, inspect
+    from importlib import import_module
+    from attributes.tables import BaseTableDto
 
-    export const <tipId> = {
-      tipIsmi: "...",
-      tipId: "...",
-      nitelikTipIsmi: ...,
-      kolonTanimlar: [ /* Column[] */ ],
-      tabloAttributelar: [ /* table-level attributes */ ],
-    };
-    """
+    TYPECODE_MAP = {
+        9:  "coreLib_Int32",
+        18: "coreLib_String",
+        3:  "coreLib_Boolean",
+        16: "coreLib_DateTime",
+        15: "coreLib_Decimal",
+    }
+
+    def to_pascal(s: str) -> str:
+        return "".join(w.capitalize() for w in s.split("_"))
+
+    def to_camel(s: str) -> str:
+        p = to_pascal(s)
+        return p[0].lower() + p[1:] if p else ""
+
     lines = ["// AUTO-GENERATED – Table DTO Configs"]
     mod = import_module("attributes.tables")
+
     for name, cls in inspect.getmembers(mod, inspect.isclass):
         if not (issubclass(cls, BaseTableDto) and cls is not BaseTableDto):
             continue
 
-        tip_id = getattr(cls, "tipId", name)
+        tip_id   = getattr(cls, "tipId", name)
         tip_isim = getattr(cls, "tipIsmi", name)
-        nitelik = getattr(getattr(cls, "Meta", None), "nitelikTipIsmi", None)
-
-        kolonlar = cls.column_config()
+        nitelik  = getattr(getattr(cls, "Meta", None), "nitelikTipIsmi", None)
 
         tablo_attrs = []
         if hasattr(cls, "table_config"):
             try:
-                tablo_attrs = cls.table_config()
-            except Exception:
-                tablo_attrs = []
+                tablo_attrs = cls.table_config() or []
+            except:
+                pass
+
+        kolonlar = []
+        for raw in cls.column_config():
+            fld      = raw.get("field")
+            pascal   = to_pascal(fld)
+            camel    = to_camel(fld)
+            tip_kodu = raw.get("typeCode")  # buradan okuyacağız
+
+            # dekoratörlerle eklenen gerçek kolonAttributelar
+            kolon_attrs = list(raw.get("kolonAttributelar", []))
+
+            kolonlar.append({
+                "alanIsmi":         pascal,
+                "anahtar":          camel,
+                "tipKodu":          tip_kodu,                          # doğrudan buraya
+                "kolonAttributelar": kolon_attrs,
+                "objeTipId":        TYPECODE_MAP.get(tip_kodu, "any"),
+                "bosOlabilir":      False,
+                "enumTipi":         False,
+            })
 
         payload = {
-            "tipIsmi": tip_isim,
-            "tipId": tip_id,
-            "nitelikTipIsmi": nitelik,
-            "kolonTanimlar": kolonlar,
+            "tipIsmi":           tip_isim,
+            "tipId":             tip_id,
+            "nitelikTipIsmi":    nitelik,
+            "kolonTanimlar":     kolonlar,
             "tabloAttributelar": tablo_attrs,
         }
+
         blob = json.dumps(payload, ensure_ascii=False, indent=2)
         lines.append(f"export const {tip_id} = {blob};")
 
     return lines
+
 
 
 # 5) forms.ts için FormField konfigürasyonları

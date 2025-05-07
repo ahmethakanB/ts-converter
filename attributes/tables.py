@@ -34,38 +34,43 @@ class WorkDetailTable(BaseTableDto):
     @staticmethod
     @column_hide
     @tipKodu(TypeCode.Int32)
-    @kolonIsmiAttribute
+    @kolonIsmiAttribute("ID")
     @birincilAnahtarAttribute
     def id():
-        return column("ID")
+        return column()
 
     @staticmethod
     @tipKodu(TypeCode.String)
     @column_order
-    @kolonIsmiAttribute
+    @kolonIsmiAttribute("İş Detayı Adı")
     def name():
-        return column("İş Detayı Adı")
+        return column()
 
     @staticmethod
+    @kolonIsmiAttribute("Ürünler")
     def products():
-        return column("Ürünler")
+        return column()
 
     @staticmethod
+    @kolonIsmiAttribute("Sipariş Tipi")
     def type():
-        return column("Sipariş Tipi")
+        return column()
 
     @staticmethod
     @tipKodu(TypeCode.DateTime)
+    @kolonIsmiAttribute("Başlangıç Zamanı")
     def start_datetime():
-        return column("Başlangıç Zamanı")
+        return column()
 
     @staticmethod
     @tipKodu(TypeCode.DateTime)
+    @kolonIsmiAttribute("Bitiş Zamanı")
     def end_datetime():
-        return column("Bitiş Zamanı")
+        return column()
 
     @staticmethod
     @tipKodu(TypeCode.String)
     @column_search
+    @kolonIsmiAttribute("Sipariş Tipi")
     def order_type():
-        return column("Sipariş Tipi")
+        return column()

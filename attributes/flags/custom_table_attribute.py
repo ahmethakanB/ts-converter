@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Dict, List
+from typing import Dict, List, Callable, Optional
 
 def _ensure_kolon_attributelar(col: Dict) -> List[Dict]:
     """
@@ -34,18 +34,29 @@ def kolonAttributelarBirimAttribute(fn):
         return data
     return wrapper
 
-def kolonIsmiAttribute(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        data = fn(*args, **kwargs)
-        lst = _ensure_kolon_attributelar(data)
-        # Use the column's title as the header 'baslik'
-        lst.append({
-            'tipIsmi': 'kolonIsmiAttribute',
-            'obje': {'baslik': data.get('title')}
-        })
-        return data
-    return wrapper
+def kolonIsmiAttribute(arg: Optional[str] = None):
+    """
+    @kolonIsmiAttribute            → obje.baslik = None
+    @kolonIsmiAttribute("ÖzelBaşlık") → obje.baslik = "ÖzelBaşlık"
+    """
+    def decorator(fn: Callable[[], Dict]) -> Callable[[], Dict]:
+        @wraps(fn)
+        def wrapped():
+            data = fn()
+            attrs = data.setdefault("kolonAttributelar", [])
+            attrs.append({
+                "tipIsmi": "kolonIsmiAttribute",
+                "obje": {"baslik": arg}
+            })
+            return data
+        return wrapped
+
+    # dekoratör direkt kullanıldıysa arg fonksiyon olur:
+    if callable(arg):
+        fn = arg  # tip: kolonIsmiAttribute kullanımı parametresiz
+        arg = None
+        return decorator(fn)
+    return decorator
 
 def kolonGizliAttribute(fn):
     @wraps(fn)

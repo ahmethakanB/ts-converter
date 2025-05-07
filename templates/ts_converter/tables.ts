@@ -7,6 +7,9 @@ export const WorkDetailTable = {
   "nitelikTipIsmi": null,
   "kolonTanimlar": [
     {
+      "alanIsmi": "Id",
+      "anahtar": "id",
+      "tipKodu": 9,
       "kolonAttributelar": [
         {
           "tipIsmi": "birincilAnahtarAttribute",
@@ -15,13 +18,7 @@ export const WorkDetailTable = {
         {
           "tipIsmi": "kolonIsmiAttribute",
           "obje": {
-            "baslik": null
-          }
-        },
-        {
-          "tipIsmi": "tipKoduAttribute",
-          "obje": {
-            "tipKodu": 9
+            "baslik": "ID"
           }
         },
         {
@@ -29,73 +26,113 @@ export const WorkDetailTable = {
           "obje": {}
         }
       ],
-      "field": "id"
+      "objeTipId": "coreLib_Int32",
+      "bosOlabilir": false,
+      "enumTipi": false
     },
     {
+      "alanIsmi": "Name",
+      "anahtar": "name",
+      "tipKodu": 18,
       "kolonAttributelar": [
         {
           "tipIsmi": "kolonIsmiAttribute",
           "obje": {
-            "baslik": null
+            "baslik": "İş Detayı Adı"
           }
         },
         {
           "tipIsmi": "kolonOrderableAttribute",
           "obje": {}
+        }
+      ],
+      "objeTipId": "coreLib_String",
+      "bosOlabilir": false,
+      "enumTipi": false
+    },
+    {
+      "alanIsmi": "Products",
+      "anahtar": "products",
+      "tipKodu": null,
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": "Ürünler"
+          }
+        }
+      ],
+      "objeTipId": "any",
+      "bosOlabilir": false,
+      "enumTipi": false
+    },
+    {
+      "alanIsmi": "Type",
+      "anahtar": "type",
+      "tipKodu": null,
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": "Sipariş Tipi"
+          }
+        }
+      ],
+      "objeTipId": "any",
+      "bosOlabilir": false,
+      "enumTipi": false
+    },
+    {
+      "alanIsmi": "StartDatetime",
+      "anahtar": "startDatetime",
+      "tipKodu": 16,
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": "Başlangıç Zamanı"
+          }
+        }
+      ],
+      "objeTipId": "coreLib_DateTime",
+      "bosOlabilir": false,
+      "enumTipi": false
+    },
+    {
+      "alanIsmi": "EndDatetime",
+      "anahtar": "endDatetime",
+      "tipKodu": 16,
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": "Bitiş Zamanı"
+          }
+        }
+      ],
+      "objeTipId": "coreLib_DateTime",
+      "bosOlabilir": false,
+      "enumTipi": false
+    },
+    {
+      "alanIsmi": "OrderType",
+      "anahtar": "orderType",
+      "tipKodu": 18,
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": "Sipariş Tipi"
+          }
         },
-        {
-          "tipIsmi": "tipKoduAttribute",
-          "obje": {
-            "tipKodu": 18
-          }
-        }
-      ],
-      "field": "name"
-    },
-    {
-      "kolonAttributelar": [],
-      "field": "products"
-    },
-    {
-      "kolonAttributelar": [],
-      "field": "type"
-    },
-    {
-      "kolonAttributelar": [
-        {
-          "tipIsmi": "tipKoduAttribute",
-          "obje": {
-            "tipKodu": 16
-          }
-        }
-      ],
-      "field": "start_datetime"
-    },
-    {
-      "kolonAttributelar": [
-        {
-          "tipIsmi": "tipKoduAttribute",
-          "obje": {
-            "tipKodu": 16
-          }
-        }
-      ],
-      "field": "end_datetime"
-    },
-    {
-      "kolonAttributelar": [
         {
           "tipIsmi": "kolonSearchableAttribute",
           "obje": {}
-        },
-        {
-          "tipIsmi": "tipKoduAttribute",
-          "obje": {
-            "tipKodu": 18
-          }
         }
       ],
-      "field": "order_type"
+      "objeTipId": "coreLib_String",
+      "bosOlabilir": false,
+      "enumTipi": false
     }
   ],
   "tabloAttributelar": []

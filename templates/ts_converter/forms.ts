@@ -44,10 +44,7 @@ export const Order_create_Fields: FormField[] = [
     "field": "type",
     "label": "Sipariş Tipi",
     "type": "3",
-    api: apiConfigs.orderTypeAPI,
-    "model_name": "OrderType",
-    "model": "OrderType",
-    "serializer": "OrderTypeSerializer"
+    api: apiConfigs.orderTypeAPI
   },
   {
     "formAttributes": {
@@ -56,10 +53,7 @@ export const Order_create_Fields: FormField[] = [
     "field": "products",
     "label": "Ürünler",
     "type": "4",
-    api: apiConfigs.productAPI,
-    "model_name": "Product",
-    "model": "Product",
-    "serializer": "ProductSerializer"
+    api: apiConfigs.productAPI
   }
 ];
 export const Order_update_Fields: FormField[] = [
@@ -111,10 +105,7 @@ export const Order_update_Fields: FormField[] = [
     "field": "type",
     "label": "Sipariş Tipi",
     "type": "3",
-    api: apiConfigs.orderTypeAPI,
-    "model_name": "OrderType",
-    "model": "OrderType",
-    "serializer": "OrderTypeSerializer"
+    api: apiConfigs.orderTypeAPI
   },
   {
     "formAttributes": {
@@ -123,10 +114,7 @@ export const Order_update_Fields: FormField[] = [
     "field": "products",
     "label": "Ürünler",
     "type": "4",
-    api: apiConfigs.productAPI,
-    "model_name": "Product",
-    "model": "Product",
-    "serializer": "ProductSerializer"
+    api: apiConfigs.productAPI
   }
 ];
 export const Order_view_Fields: FormField[] = [
@@ -183,10 +171,7 @@ export const Order_view_Fields: FormField[] = [
     "field": "type",
     "label": "Sipariş Tipi",
     "type": "3",
-    api: apiConfigs.orderTypeAPI,
-    "model_name": "OrderType",
-    "model": "OrderType",
-    "serializer": "OrderTypeSerializer"
+    api: apiConfigs.orderTypeAPI
   },
   {
     "formAttributes": {
@@ -196,9 +181,6 @@ export const Order_view_Fields: FormField[] = [
     "field": "products",
     "label": "Ürünler",
     "type": "4",
-    api: apiConfigs.productAPI,
-    "model_name": "Product",
-    "model": "Product",
-    "serializer": "ProductSerializer"
+    api: apiConfigs.productAPI
   }
 ];

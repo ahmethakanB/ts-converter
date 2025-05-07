@@ -1,51 +1,102 @@
 import { Column } from './core';
 
 // AUTO-GENERATED – Table DTO Configs
-export const WorkDetailTableColumns: Column[] = [
-  {
-    "title": "ID",
-    "tableAttributes": {
-      "hidden": true
+export const WorkDetailTable = {
+  "tipIsmi": "WorkDetailTable",
+  "tipId": "WorkDetailTable",
+  "nitelikTipIsmi": null,
+  "kolonTanimlar": [
+    {
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "birincilAnahtarAttribute",
+          "obje": {}
+        },
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": null
+          }
+        },
+        {
+          "tipIsmi": "tipKoduAttribute",
+          "obje": {
+            "tipKodu": 9
+          }
+        },
+        {
+          "tipIsmi": "kolonHideAttribute",
+          "obje": {}
+        }
+      ],
+      "field": "id"
     },
-    "typeCode": 9,
-    "field": "id"
-  },
-  {
-    "title": "İş Detayı Adı",
-    "tableAttributes": {
-      "orderable": true
+    {
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonIsmiAttribute",
+          "obje": {
+            "baslik": null
+          }
+        },
+        {
+          "tipIsmi": "kolonOrderableAttribute",
+          "obje": {}
+        },
+        {
+          "tipIsmi": "tipKoduAttribute",
+          "obje": {
+            "tipKodu": 18
+          }
+        }
+      ],
+      "field": "name"
     },
-    "typeCode": 18,
-    "field": "name"
-  },
-  {
-    "title": "Ürünler",
-    "tableAttributes": {},
-    "field": "products"
-  },
-  {
-    "title": "Sipariş Tipi",
-    "tableAttributes": {},
-    "field": "type"
-  },
-  {
-    "title": "Başlangıç Zamanı",
-    "tableAttributes": {},
-    "typeCode": 16,
-    "field": "start_datetime"
-  },
-  {
-    "title": "Bitiş Zamanı",
-    "tableAttributes": {},
-    "typeCode": 16,
-    "field": "end_datetime"
-  },
-  {
-    "title": "Sipariş Tipi",
-    "tableAttributes": {
-      "searchable": false
+    {
+      "kolonAttributelar": [],
+      "field": "products"
     },
-    "typeCode": 18,
-    "field": "order_type"
-  }
-];
+    {
+      "kolonAttributelar": [],
+      "field": "type"
+    },
+    {
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "tipKoduAttribute",
+          "obje": {
+            "tipKodu": 16
+          }
+        }
+      ],
+      "field": "start_datetime"
+    },
+    {
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "tipKoduAttribute",
+          "obje": {
+            "tipKodu": 16
+          }
+        }
+      ],
+      "field": "end_datetime"
+    },
+    {
+      "kolonAttributelar": [
+        {
+          "tipIsmi": "kolonSearchableAttribute",
+          "obje": {}
+        },
+        {
+          "tipIsmi": "tipKoduAttribute",
+          "obje": {
+            "tipKodu": 18
+          }
+        }
+      ],
+      "field": "order_type"
+    }
+  ],
+  "tabloAttributelar": []
+};

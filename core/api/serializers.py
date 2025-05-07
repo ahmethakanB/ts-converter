@@ -66,3 +66,22 @@ class OrderTypeSerializer(DynamicFieldsModelSerializer):
             'id',
             'name',
         )
+
+class OrderSerializer(DynamicFieldsModelSerializer):
+    order_type = serializers.CharField(source="type.name", read_only=True)
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Order.products.rel.model.objects.all(),
+        many=True
+    )
+
+    class Meta:
+        model  = Order
+        fields = (
+            'id',
+            'name',
+            'products',
+            'type',
+            'start_datetime',
+            'end_datetime',
+            'order_type',
+        )

@@ -2,13 +2,17 @@ from functools import wraps
 from attributes.flags.typecodes import TypeCode
 from typing import Dict, Callable
 
-def type_code(code: TypeCode):
-    """@type_code(TypeCode.Decimal)"""
+def tipKodu(code: TypeCode):
+    """@tipKodu(TypeCode.Int32) → listeye bir tipKoduAttribute ekler"""
     def decorator(fn):
         @wraps(fn)
         def wrapped():
             data = fn()
-            data["typeCode"] = int(code)
+            attrs = data.setdefault("kolonAttributelar", [])
+            attrs.append({
+                "tipIsmi": "tipKoduAttribute",
+                "obje": {"tipKodu": int(code)}
+            })
             return data
         return wrapped
     return decorator

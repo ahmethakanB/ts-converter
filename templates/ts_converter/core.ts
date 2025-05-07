@@ -1,10 +1,10 @@
 // AUTO-GENERATED – Core Interfaces
 export interface Column {
-  field: string;
-  title: string;
+  alanIsmi: string;
+  anahtar: string;
   hidden?: boolean;
   typeCode?: number;
-  tableAttributes?: { [key: string]: any };
+  kolonAttributelar?: { [key: string]: any };
   [key: string]: any;
 }
 export interface FormField {
@@ -16,7 +16,4 @@ export interface FormField {
   formAttributes?: { [key: string]: any };
   [key: string]: any;
   api?: any;
-  model_name?: string;
-  model?: string;
-  serializer?: string;
 }

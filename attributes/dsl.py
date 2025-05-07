@@ -5,12 +5,17 @@ def _ensure_attrs(col: Dict) -> Dict:
     return col["tableAttributes"]
 
 def column(title: str, **extra) -> Dict:
-    """extra anahtarları doğrudan KÖK’e ekler (istenirse)."""
-    base = {
-        "title": title,
-        "tableAttributes": {},
+    """
+    title: Kolon başlığı.
+    extra: İsterseniz statik ek alanlar.
+    """
+    base: Dict = {
+        # API’deki karşılığı "alanIsmi", frontend’te bizi ilgilendiren başlık:
+        # "title": title,
+        # artık tablo attribute’leri bu listede saklanacak:
+        "kolonAttributelar": [],
     }
-    base.update()
+    base.update(extra)
     return base
 
 def field(title: str, **extra) -> Dict:

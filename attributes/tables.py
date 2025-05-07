@@ -1,7 +1,8 @@
 from typing import List, Dict
 
 from attributes.dsl import column
-from attributes.flags.table_root import type_code
+from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincilAnahtarAttribute
+from attributes.flags.table_root import tipKodu
 from attributes.flags.table import column_hide, column_search, column_order
 from attributes.flags.typecodes import TypeCode
 
@@ -32,13 +33,16 @@ class WorkDetailTable(BaseTableDto):
 
     @staticmethod
     @column_hide
-    @type_code(TypeCode.Int32)
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute
+    @birincilAnahtarAttribute
     def id():
         return column("ID")
 
     @staticmethod
-    @type_code(TypeCode.String)
+    @tipKodu(TypeCode.String)
     @column_order
+    @kolonIsmiAttribute
     def name():
         return column("İş Detayı Adı")
 
@@ -51,17 +55,17 @@ class WorkDetailTable(BaseTableDto):
         return column("Sipariş Tipi")
 
     @staticmethod
-    @type_code(TypeCode.DateTime)
+    @tipKodu(TypeCode.DateTime)
     def start_datetime():
         return column("Başlangıç Zamanı")
 
     @staticmethod
-    @type_code(TypeCode.DateTime)
+    @tipKodu(TypeCode.DateTime)
     def end_datetime():
         return column("Bitiş Zamanı")
 
     @staticmethod
-    @type_code(TypeCode.String)
+    @tipKodu(TypeCode.String)
     @column_search
     def order_type():
         return column("Sipariş Tipi")

@@ -1,31 +1,37 @@
-import pkgutil
 import inspect
 import json
+import pkgutil
 import re
-from pathlib import Path
 from importlib import import_module
+from pathlib import Path
 
 from django.apps import apps as django_apps
 from django.db import models as django_models
 from django.urls import URLPattern
 from rest_framework import serializers
 from rest_framework.generics import (
-    DestroyAPIView, UpdateAPIView, CreateAPIView, ListAPIView
+    DestroyAPIView,
+    UpdateAPIView,
+    CreateAPIView
 )
-from rest_framework.serializers import BaseSerializer, ListSerializer, Serializer as DRFSerializer, ModelSerializer
-from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
+from rest_framework.relations import (
+    PrimaryKeyRelatedField,
+    SlugRelatedField
+)
+from rest_framework.serializers import (
+    BaseSerializer,
+    ListSerializer,
+    Serializer as DRFSerializer, ModelSerializer
+)
 from rest_framework.views import APIView
 
-from attributes.tables import BaseTableDto
 from attributes.forms import BaseFormDto
 
-# ————— Constants —————
 MODES = ("create", "update", "view")
 SERIALIZER_PACKAGE = "core.api.serializers"
 OUTPUT_DIR = Path("templates/ts_converter")
 
 
-# 1) core.ts için ara yüzler
 CORE_INTERFACES = {
     "Column": {
         "alanIsmi": "string",
@@ -57,14 +63,11 @@ def export_core_interfaces() -> list[str]:
     return lines
 
 
-# 2) models.ts için Model ara yüzleri
 def _ts_type_for_model_field(field: django_models.Field) -> str:
-    # ilişkisel alanlar
     if getattr(field, "many_to_many", False) or getattr(field, "one_to_many", False):
         return f"{field.related_model.__name__}[]"
     if getattr(field, "many_to_one", False) or getattr(field, "one_to_one", False):
         return field.related_model.__name__
-    # temel map
     mapping = {
         django_models.AutoField:    "number",
         django_models.IntegerField: "number",
@@ -98,7 +101,6 @@ def export_model_interfaces() -> list[str]:
     return lines
 
 
-# 3) serializers.ts için Serializer ara yüzleri
 def _type_code_for_field(fld: serializers.Field) -> int:
     mapping = {
         serializers.IntegerField:   9,
@@ -143,8 +145,9 @@ def export_serializer(serializer: BaseSerializer) -> str:
     lines.append("}")
     return "\n".join(lines)
 
+
 def export_serializers() -> list[str]:
-    lines = ["// AUTO-GENERATED – Serializer Interfaces"]
+    lines = []
     try:
         pkg = import_module(SERIALIZER_PACKAGE)
     except ModuleNotFoundError:
@@ -172,7 +175,6 @@ def export_serializers() -> list[str]:
     return lines
 
 
-# 4) tables.ts için Column konfigürasyonları
 def export_table_dtos() -> list[str]:
     import json, inspect
     from importlib import import_module
@@ -193,16 +195,16 @@ def export_table_dtos() -> list[str]:
         p = to_pascal(s)
         return p[0].lower() + p[1:] if p else ""
 
-    lines = ["// AUTO-GENERATED – Table DTO Configs"]
+    lines = []
     mod = import_module("attributes.tables")
 
     for name, cls in inspect.getmembers(mod, inspect.isclass):
         if not (issubclass(cls, BaseTableDto) and cls is not BaseTableDto):
             continue
 
-        tip_id   = getattr(cls, "tipId", name)
-        tip_isim = getattr(cls, "tipIsmi", name)
-        nitelik  = getattr(getattr(cls, "Meta", None), "nitelikTipIsmi", None)
+        type_id   = getattr(cls, "tipId", name)
+        type_name = getattr(cls, "tipIsmi", name)
+        attributes  = getattr(getattr(cls, "Meta", None), "nitelikTipIsmi", None)
 
         tablo_attrs = []
         if hasattr(cls, "table_config"):
@@ -216,51 +218,46 @@ def export_table_dtos() -> list[str]:
             fld      = raw.get("field")
             pascal   = to_pascal(fld)
             camel    = to_camel(fld)
-            tip_kodu = raw.get("typeCode")  # buradan okuyacağız
+            tip_kodu = raw.get("typeCode")
 
-            # dekoratörlerle eklenen gerçek kolonAttributelar
-            kolon_attrs = list(raw.get("kolonAttributelar", []))
+            column_attributes = list(raw.get("kolonAttributelar", []))
 
             kolonlar.append({
                 "alanIsmi":         pascal,
                 "anahtar":          camel,
-                "tipKodu":          tip_kodu,                          # doğrudan buraya
-                "kolonAttributelar": kolon_attrs,
+                "tipKodu":          tip_kodu,
+                "kolonAttributelar": column_attributes,
                 "objeTipId":        TYPECODE_MAP.get(tip_kodu, "any"),
                 "bosOlabilir":      False,
                 "enumTipi":         False,
             })
 
         payload = {
-            "tipIsmi":           tip_isim,
-            "tipId":             tip_id,
-            "nitelikTipIsmi":    nitelik,
+            "tipIsmi":           type_name,
+            "tipId":             type_id,
+            "nitelikTipIsmi":    attributes,
             "kolonTanimlar":     kolonlar,
             "tabloAttributelar": tablo_attrs,
         }
 
         blob = json.dumps(payload, ensure_ascii=False, indent=2)
-        lines.append(f"export const {tip_id} = {blob};")
+        lines.append(f"export const {type_id} = {blob};")
 
     return lines
 
 
-
-# 5) forms.ts için FormField konfigürasyonları
 def export_form_dtos() -> list[str]:
     from django.db.models import ForeignKey, ManyToManyField
 
     lines = [
         "import { FormField } from './core';",
         "import { apiConfigs } from './api_configs';",
-        "// AUTO-GENERATED – Form DTO Configs",
     ]
     mod = import_module("attributes.forms")
     for name, cls in inspect.getmembers(mod, inspect.isclass):
         if not (issubclass(cls, BaseFormDto) and cls is not BaseFormDto):
             continue
 
-        # hangi modele ait?
         model_cls = getattr(getattr(cls, "Meta", None), "model", None)
         if not model_cls:
             base = name[:-7] if name.endswith("FormDto") else name
@@ -289,7 +286,6 @@ def export_form_dtos() -> list[str]:
                         pass
 
             const = json.dumps(arr, ensure_ascii=False, indent=2)
-            # "api": "xyzAPI" → api: apiConfigs.xyzAPI
             const = re.sub(r'"api":\s*"(\w+API)"', r'api: apiConfigs.\1', const)
             dto = name[:-7] if name.endswith("FormDto") else name
             lines.append(f"export const {dto}_{mode}_Fields: FormField[] = {const};")
@@ -297,19 +293,14 @@ def export_form_dtos() -> list[str]:
     return lines
 
 
-# 6) models.ts içinde hem modelleri hem de Serializer/DTO metadata’sını tutacak blok
 def export_typeInformation() -> list[str]:
     from rest_framework.serializers import BaseSerializer
     lines = [
-        # bu blok models.ts içinde serializer ara yüzlerinden hemen sonra gelecektir
-        "// AUTO-GENERATED – Metadata for DTOs & Serializers",
         "export const typeInformation = {",
     ]
-    # modeller
     for model in django_apps.get_models():
         nm = model.__name__
         lines.append(f"  {nm}: {{ tipIsmi: \"{nm}\" }},")
-    # serializer’lar
     try:
         pkg = import_module(SERIALIZER_PACKAGE)
         modules = [SERIALIZER_PACKAGE]
@@ -335,7 +326,7 @@ def export_typeInformation() -> list[str]:
 
 
 def export_api_configs() -> list[str]:
-    lines = ["// AUTO-GENERATED – API Configs"]
+    lines = []
     used_models = set()
     used_serializers = set()
     entries = []
@@ -364,7 +355,6 @@ def export_api_configs() -> list[str]:
         else:
             method, queryable = "GET", True
 
-        # hangi model?
         mn = "any"
         if getattr(view_cls, "queryset", None) is not None:
             mn = view_cls.queryset.model.__name__
@@ -374,7 +364,6 @@ def export_api_configs() -> list[str]:
             if meta and getattr(meta, "model", None):
                 mn = meta.model.__name__
 
-        # hangi serializer?
         sn = getattr(view_cls, "serializer_class", None)
         sn = sn.__name__ if sn else ""
 
@@ -386,7 +375,6 @@ def export_api_configs() -> list[str]:
 
     lines.append("import { typeInformation } from './models';")
 
-    # export bloğu
     lines.append("export const apiConfigs = {")
     for key, route, method, queryable, cname, mn, sn in entries:
         lines.extend([
@@ -408,30 +396,23 @@ def export_api_configs() -> list[str]:
 def export_all_ts(output_dir: Path = OUTPUT_DIR):
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # core.ts
     (output_dir / "core.ts").write_text("\n".join(export_core_interfaces()), encoding="utf-8")
 
-    # models.ts: modeller + typeInformation + serializer ara yüzleri
     combined = (
         export_model_interfaces()
-        + [""]  # boş satır
+        + [""]
         + export_serializers()
-        + [""]  # boş satır
+        + [""]
         + export_typeInformation()
     )
     (output_dir / "models.ts").write_text("\n".join(combined), encoding="utf-8")
 
-    # tables.ts
     (output_dir / 'tables.ts').write_text(
         "import { Column } from './core';\n\n"
         + "\n".join(export_table_dtos()),
         encoding='utf-8'
     )
 
-    # forms.ts
     (output_dir / "forms.ts").write_text("\n".join(export_form_dtos()), encoding="utf-8")
 
-    # api_configs.ts
     (output_dir / "api_configs.ts").write_text("\n".join(export_api_configs()), encoding="utf-8")
-
-    print(f"✅ Generated TS files in {output_dir}")

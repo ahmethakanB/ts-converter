@@ -5,7 +5,6 @@ from core.utils.api import DynamicFieldsModelSerializer
 
 
 class OrderDetailSerializer(DynamicFieldsModelSerializer):
-    order_type = serializers.CharField(source="type.name", read_only=True)
     products = serializers.PrimaryKeyRelatedField(
         queryset=Order.products.rel.model.objects.all(),
         many=True
@@ -27,7 +26,6 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
             'type',
             'start_datetime',
             'end_datetime',
-            'order_type',
         )
 
     def create(self, validated_data):
@@ -44,7 +42,6 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
         if products is not None:
             instance.products.set(products)
         return instance
-
 
 class ProductSerializer(DynamicFieldsModelSerializer):
     class Meta:

@@ -1,4 +1,3 @@
-// AUTO-GENERATED – API Configs
 import { typeInformation } from './models';
 export const apiConfigs = {
   productAPI: {

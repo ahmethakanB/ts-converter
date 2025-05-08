@@ -13,14 +13,3 @@ def tipKodu(code: TypeCode):
             return data
         return wrapped
     return decorator
-
-def required(fn: Callable[[], Dict]) -> Callable[[], Dict]:
-    """
-    @required  →  "required": True
-    """
-    @wraps(fn)
-    def wrapped():
-        data = fn()
-        data["required"] = True
-        return data
-    return wrapped

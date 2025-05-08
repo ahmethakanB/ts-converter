@@ -70,40 +70,20 @@ export interface Order {
   products: Product[];
 }
 
-// AUTO-GENERATED – Serializer Interfaces
-export interface OrderDetailSerializer {
-  id?: number;
-  name: string;
-  products: any;
-  type: number;
-  start_datetime: string;
-  end_datetime: string;
-  order_type?: string;
-}
-export interface OrderSerializer {
-  id?: number;
-  name: string;
-  products: any;
-  type: number;
-  start_datetime: string;
-  end_datetime: string;
-  order_type?: string;
-}
 export interface OrderTypeSerializer {
-  id?: number;
-  name: string;
+  id?: coreLib_Int32;
+  name: coreLib_String;
 }
 export interface ProductSerializer {
-  id?: number;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  is_dismantling?: boolean;
-  is_plannable?: boolean;
+  id?: coreLib_Int32;
+  name: coreLib_String;
+  description?: coreLib_String;
+  price: coreLib_Decimal;
+  stock: coreLib_Int32;
+  is_dismantling?: coreLib_Boolean;
+  is_plannable?: coreLib_Boolean;
 }
 
-// AUTO-GENERATED – Metadata for DTOs & Serializers
 export const typeInformation = {
   LogEntry: { tipIsmi: "LogEntry" },
   Permission: { tipIsmi: "Permission" },

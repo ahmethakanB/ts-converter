@@ -1,31 +1,25 @@
 import inspect
 import json
 import pkgutil
-import re
 from importlib import import_module
 from pathlib import Path
 
 from django.apps import apps as django_apps
 from django.db import models as django_models
+from django.db.models import ForeignKey, ManyToManyField
 from django.urls import URLPattern
 from rest_framework import serializers
-from rest_framework.generics import (
-    DestroyAPIView,
-    UpdateAPIView,
-    CreateAPIView
-)
-from rest_framework.relations import (
-    PrimaryKeyRelatedField,
-    SlugRelatedField
-)
+from rest_framework.generics import DestroyAPIView, UpdateAPIView, CreateAPIView
+from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
 from rest_framework.serializers import (
     BaseSerializer,
     ListSerializer,
-    Serializer as DRFSerializer, ModelSerializer
+    Serializer as DRFSerializer,
+    ModelSerializer,
 )
 from rest_framework.views import APIView
 
-from attributes.forms import BaseFormDto
+from attributes.tables import BaseTableDto
 
 MODES = ("create", "update", "view")
 SERIALIZER_PACKAGE = "core.api.serializers"
@@ -41,17 +35,16 @@ CORE_INTERFACES = {
         "kolonAttributelar?": "{ [key: string]: any }",
         "[key: string]": "any",
     },
-    "FormField": {
-        "field": "string",
-        "label": "string",
-        "type": "string",
-        "required?": "boolean",
-        "disabled?": "boolean",
-        "formAttributes?": "{ [key: string]: any }",
-        "[key: string]": "any",
-        "api?": "any",
-    },
 }
+
+TYPECODE_MAP = {
+    9:  "coreLib_Int32",
+    18: "coreLib_String",
+    3:  "coreLib_Boolean",
+    16: "coreLib_DateTime",
+    15: "coreLib_Decimal",
+}
+
 
 def export_core_interfaces() -> list[str]:
     lines = ["// AUTO-GENERATED – Core Interfaces"]
@@ -87,6 +80,7 @@ def _ts_type_for_model_field(field: django_models.Field) -> str:
             return ts
     return "any"
 
+
 def export_model_interfaces() -> list[str]:
     lines = ["// AUTO-GENERATED – Model Interfaces"]
     for model in django_apps.get_models():
@@ -114,14 +108,6 @@ def _type_code_for_field(fld: serializers.Field) -> int:
             return code
     return 1
 
-TYPE_CODE_TS_MAP = {
-    1:  "any",
-    3:  "boolean",
-    9:  "number",
-    15: "number",
-    16: "string",
-    18: "string",
-}
 
 def _ts_type_for_field(fld: serializers.Field) -> str:
     many = getattr(fld, "many", False)
@@ -133,7 +119,8 @@ def _ts_type_for_field(fld: serializers.Field) -> str:
         return f"{_ts_type_for_field(fld.child)}[]"
     if isinstance(fld, DRFSerializer) and not isinstance(fld, ModelSerializer):
         return fld.__class__.__name__
-    return TYPE_CODE_TS_MAP[_type_code_for_field(fld)]
+    return TYPECODE_MAP[_type_code_for_field(fld)]
+
 
 def export_serializer(serializer: BaseSerializer) -> str:
     name = serializer.__class__.__name__
@@ -176,9 +163,37 @@ def export_serializers() -> list[str]:
 
 
 def export_table_dtos() -> list[str]:
-    import json, inspect
+    import inspect, json, pkgutil
     from importlib import import_module
+    from django.db.models import ForeignKey, ManyToManyField
+    from django.urls import URLPattern
+    from rest_framework.views import APIView
+    from rest_framework.generics import DestroyAPIView, UpdateAPIView, CreateAPIView
     from attributes.tables import BaseTableDto
+
+    # 1) api_configs içinden model→configKey haritası
+    api_map: dict[str, str] = {}
+    try:
+        urls_mod = import_module("core.api.urls")
+        for entry in getattr(urls_mod, "urlpatterns", []):
+            if not isinstance(entry, URLPattern):
+                continue
+            view_cls = getattr(entry.callback, "view_class", None)
+            if not (view_cls and issubclass(view_cls, APIView)):
+                continue
+            key = view_cls.__name__[0].lower() + view_cls.__name__[1:]
+            # model sınıfını çöz
+            model_cls = None
+            if hasattr(view_cls, "queryset") and view_cls.queryset is not None:
+                model_cls = view_cls.queryset.model
+            else:
+                ser = getattr(view_cls, "serializer_class", None)
+                meta = getattr(ser, "Meta", None)
+                model_cls = getattr(meta, "model", None)
+            if model_cls:
+                api_map[model_cls._meta.object_name] = key
+    except ImportError:
+        pass
 
     TYPECODE_MAP = {
         9:  "coreLib_Int32",
@@ -188,116 +203,94 @@ def export_table_dtos() -> list[str]:
         15: "coreLib_Decimal",
     }
 
-    def to_pascal(s: str) -> str:
-        return "".join(w.capitalize() for w in s.split("_"))
-
-    def to_camel(s: str) -> str:
-        p = to_pascal(s)
-        return p[0].lower() + p[1:] if p else ""
-
-    lines = []
-    mod = import_module("attributes.tables")
-
-    for name, cls in inspect.getmembers(mod, inspect.isclass):
-        if not (issubclass(cls, BaseTableDto) and cls is not BaseTableDto):
-            continue
-
-        type_id   = getattr(cls, "tipId", name)
-        type_name = getattr(cls, "tipIsmi", name)
-        attributes  = getattr(getattr(cls, "Meta", None), "nitelikTipIsmi", None)
-
-        tablo_attrs = []
-        if hasattr(cls, "table_config"):
-            try:
-                tablo_attrs = cls.table_config() or []
-            except:
-                pass
-
-        kolonlar = []
-        for raw in cls.column_config():
-            fld      = raw.get("field")
-            pascal   = to_pascal(fld)
-            camel    = to_camel(fld)
-            tip_kodu = raw.get("typeCode")
-
-            column_attributes = list(raw.get("kolonAttributelar", []))
-
-            kolonlar.append({
-                "alanIsmi":         pascal,
-                "anahtar":          camel,
-                "tipKodu":          tip_kodu,
-                "kolonAttributelar": column_attributes,
-                "objeTipId":        TYPECODE_MAP.get(tip_kodu, "any"),
-                "bosOlabilir":      False,
-                "enumTipi":         False,
-            })
-
-        payload = {
-            "tipIsmi":           type_name,
-            "tipId":             type_id,
-            "nitelikTipIsmi":    attributes,
-            "kolonTanimlar":     kolonlar,
-            "tabloAttributelar": tablo_attrs,
-        }
-
-        blob = json.dumps(payload, ensure_ascii=False, indent=2)
-        lines.append(f"export const {type_id} = {blob};")
-
-    return lines
-
-
-def export_form_dtos() -> list[str]:
-    from django.db.models import ForeignKey, ManyToManyField
-
-    lines = [
-        "import { FormField } from './core';",
+    lines: list[str] = [
+        "import { Column } from './core';",
+        "import { typeInformation } from './models';",
         "import { apiConfigs } from './api_configs';",
+        "",
     ]
-    mod = import_module("attributes.forms")
-    for name, cls in inspect.getmembers(mod, inspect.isclass):
-        if not (issubclass(cls, BaseFormDto) and cls is not BaseFormDto):
+
+    tables_mod = import_module("attributes.tables")
+    for name, tbl_cls in inspect.getmembers(tables_mod, inspect.isclass):
+        if not issubclass(tbl_cls, BaseTableDto) or tbl_cls is BaseTableDto:
             continue
 
-        model_cls = getattr(getattr(cls, "Meta", None), "model", None)
-        if not model_cls:
-            base = name[:-7] if name.endswith("FormDto") else name
-            for m in django_apps.get_models():
-                if m.__name__ == base:
-                    model_cls = m
-                    break
+        tip_id    = getattr(tbl_cls, "tipId", name)
+        tip_name  = getattr(tbl_cls, "tipIsmi", name)
+        meta_nitl = getattr(getattr(tbl_cls, "Meta", None), "nitelikTipIsmi", None)
+        model_cls = getattr(getattr(tbl_cls, "Meta", None), "model", None)
 
-        for mode in MODES:
-            raw = cls.form_config(mode=mode)
-            arr = raw if isinstance(raw, list) else [raw]
-            for cfg in arr:
-                title = cfg.pop("title", None)
-                if title:
-                    cfg["label"] = title
-                cfg["type"] = str(cfg.get("formAttributes", {}).get("inputType", "text"))
-                fld = cfg.get("field")
-                if model_cls and fld:
-                    try:
-                        mf = model_cls._meta.get_field(fld)
-                        if isinstance(mf, (ForeignKey, ManyToManyField)):
-                            rel = mf.related_model.__name__
-                            key = rel[0].lower() + rel[1:] + "API"
-                            cfg["api"] = key
-                    except Exception:
-                        pass
+        lines.append(f"export const {tip_id} = {{")
+        lines.append(f'  tipIsmi: "{tip_name}",')
+        lines.append(f'  tipId: "{tip_id}",')
+        lines.append(f'  nitelikTipIsmi: {json.dumps(meta_nitl)},')
+        lines.append("  kolonTanimlar: [")
 
-            const = json.dumps(arr, ensure_ascii=False, indent=2)
-            const = re.sub(r'"api":\s*"(\w+API)"', r'api: apiConfigs.\1', const)
-            dto = name[:-7] if name.endswith("FormDto") else name
-            lines.append(f"export const {dto}_{mode}_Fields: FormField[] = {const};")
+        for raw in tbl_cls.column_config():
+            fld      = raw["field"]
+            pascal   = "".join(w.capitalize() for w in fld.split("_"))
+            camel    = pascal[0].lower() + pascal[1:]
+            tip_kodu = raw.get("typeCode")
+            attrs    = raw.get("kolonAttributelar", [])
+
+            lines.append("    {")
+            lines.append(f'      alanIsmi: "{pascal}",')
+            lines.append(f'      anahtar: "{camel}",')
+            lines.append(f'      tipKodu: {tip_kodu if tip_kodu is not None else "null"},')
+            lines.append("      kolonAttributelar: [")
+
+            # FK / M2M için apiConfigs referansı
+            if model_cls:
+                try:
+                    dj_fld = model_cls._meta.get_field(fld)
+                except:
+                    dj_fld = None
+                if isinstance(dj_fld, (ForeignKey, ManyToManyField)):
+                    related = dj_fld.remote_field.model._meta.object_name
+                    cfg_key = api_map.get(related, related[0].lower() + related[1:])
+                    lines.append("        {")
+                    lines.append(f'          tipIsmi: "alanSecimSecenekTipi{pascal}",')
+                    lines.append("          obje: {")
+                    lines.append(
+                        f'            sorguObje: {{ '
+                        f'ustSecenekId: null, '
+                        f'tabloAdi: "{related}", '
+                        f'kolonAdi: "{fld}", '
+                        f'secenekTipi: null '
+                        f'}},'
+                    )
+                    lines.append(
+                        f'            sorguTipId: `{cfg_key}`,'
+                    )
+                    lines.append("            etiketAnahtarlar: null,")
+                    lines.append("            aciklamaAnahtar: null,")
+                    lines.append("            excelAnahtar: null,")
+                    lines.append("            yalnizFiltrelerdeSecim: false")
+                    lines.append("          }")
+                    lines.append("        },")
+
+            # diğer attribute’lar
+            for attr in attrs:
+                blob = json.dumps(attr, ensure_ascii=False)
+                lines.append(f"        {blob},")
+
+            lines.append("      ],")
+            lines.append(f'      objeTipId: "{TYPECODE_MAP.get(tip_kodu, "any")}",')
+            lines.append("      bosOlabilir: false,")
+            lines.append("      enumTipi: false")
+            lines.append("    },")
+
+        lines.append("  ],")
+        lines.append("  tabloAttributelar: []")
+        lines.append("};")
+        lines.append("")
 
     return lines
 
 
 def export_typeInformation() -> list[str]:
     from rest_framework.serializers import BaseSerializer
-    lines = [
-        "export const typeInformation = {",
-    ]
+    lines = ["export const typeInformation = {"]
     for model in django_apps.get_models():
         nm = model.__name__
         lines.append(f"  {nm}: {{ tipIsmi: \"{nm}\" }},")
@@ -320,16 +313,13 @@ def export_typeInformation() -> list[str]:
                     lines.append(f"  {nm}: {{ tipIsmi: \"{nm}\" }},")
     except ImportError:
         pass
-
     lines.append("};")
     return lines
 
 
 def export_api_configs() -> list[str]:
-    lines = []
-    used_models = set()
-    used_serializers = set()
-    entries = []
+    lines: list[str] = []
+    entries: list[tuple] = []
 
     try:
         urls = import_module("core.api.urls")
@@ -346,6 +336,7 @@ def export_api_configs() -> list[str]:
 
         key   = view_cls.__name__[0].lower() + view_cls.__name__[1:]
         route = "/" + entry.pattern._route.strip("/")
+
         if issubclass(view_cls, DestroyAPIView):
             method, queryable = "DELETE", False
         elif issubclass(view_cls, UpdateAPIView):
@@ -367,16 +358,11 @@ def export_api_configs() -> list[str]:
         sn = getattr(view_cls, "serializer_class", None)
         sn = sn.__name__ if sn else ""
 
-        used_models.add(mn)
-        if sn:
-            used_serializers.add(sn)
-
-        entries.append((key, route, method, queryable, view_cls.__name__, mn, sn))
+        entries.append((key, route, method, queryable, mn, sn, view_cls.__name__))
 
     lines.append("import { typeInformation } from './models';")
-
     lines.append("export const apiConfigs = {")
-    for key, route, method, queryable, cname, mn, sn in entries:
+    for key, route, method, queryable, mn, sn, cname in entries:
         lines.extend([
             f"  {key}: {{",
             f"    link         : '{route}',",
@@ -396,23 +382,32 @@ def export_api_configs() -> list[str]:
 def export_all_ts(output_dir: Path = OUTPUT_DIR):
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    (output_dir / "core.ts").write_text("\n".join(export_core_interfaces()), encoding="utf-8")
+    # core.ts
+    (output_dir / "core.ts").write_text(
+        "\n".join(export_core_interfaces()), encoding="utf-8"
+    )
 
-    combined = (
+    # models.ts
+    models_lines = (
         export_model_interfaces()
         + [""]
         + export_serializers()
         + [""]
         + export_typeInformation()
     )
-    (output_dir / "models.ts").write_text("\n".join(combined), encoding="utf-8")
-
-    (output_dir / 'tables.ts').write_text(
-        "import { Column } from './core';\n\n"
-        + "\n".join(export_table_dtos()),
-        encoding='utf-8'
+    (output_dir / "models.ts").write_text(
+        "\n".join(models_lines), encoding="utf-8"
     )
 
-    (output_dir / "forms.ts").write_text("\n".join(export_form_dtos()), encoding="utf-8")
+    # tables.ts
+    table_lines = export_table_dtos()
+    (output_dir / "tables.ts").write_text(
+        "import { Column } from './core';\n\n"
+        + "\n".join(table_lines),
+        encoding="utf-8"
+    )
 
-    (output_dir / "api_configs.ts").write_text("\n".join(export_api_configs()), encoding="utf-8")
+    # api_configs.ts
+    (output_dir / "api_configs.ts").write_text(
+        "\n".join(export_api_configs()), encoding="utf-8"
+    )

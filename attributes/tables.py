@@ -1,10 +1,11 @@
 from typing import List, Dict
 
 from attributes.dsl import column
-from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincilAnahtarAttribute
+from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincilAnahtarAttribute, \
+    kolonAlanSecimEtiketAttribute
 from attributes.flags.table_root import tipKodu
-from attributes.flags.table import column_hide, column_search, column_order
 from attributes.flags.typecodes import TypeCode
+from core.models import Order
 
 
 class BaseTableDto:
@@ -30,9 +31,10 @@ class BaseTableDto:
         return cols
 
 class WorkDetailTable(BaseTableDto):
+    class Meta:
+        model = Order
 
     @staticmethod
-    @column_hide
     @tipKodu(TypeCode.Int32)
     @kolonIsmiAttribute("ID")
     @birincilAnahtarAttribute
@@ -40,25 +42,60 @@ class WorkDetailTable(BaseTableDto):
         return column()
 
     @staticmethod
-    @tipKodu(TypeCode.String)
-    @column_order
     @kolonIsmiAttribute("İş Detayı Adı")
+    @tipKodu(TypeCode.String)
     def name():
         return column()
 
     @staticmethod
+    @tipKodu(TypeCode.Int32)
     @kolonIsmiAttribute("Ürünler")
     def products():
         return column()
 
     @staticmethod
+    @tipKodu(TypeCode.Int32)
     @kolonIsmiAttribute("Sipariş Tipi")
     def type():
         return column()
 
     @staticmethod
-    @tipKodu(TypeCode.DateTime)
     @kolonIsmiAttribute("Başlangıç Zamanı")
+    @tipKodu(TypeCode.DateTime)
+    def start_datetime():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.DateTime)
+    @kolonIsmiAttribute("Bitiş Zamanı")
+    def end_datetime():
+        return column()
+
+class OrderTableDto(BaseTableDto):
+    class Meta:
+        model = Order
+
+    @staticmethod
+    @birincilAnahtarAttribute
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("ID")
+    def id():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Sipariş Adı")
+    def name():
+        return column()
+
+    @staticmethod
+    @kolonIsmiAttribute("Açıklama")
+    def description():
+        return column()
+
+    @staticmethod
+    @kolonIsmiAttribute("Başlangıç Zamanı")
+    @tipKodu(TypeCode.DateTime)
     def start_datetime():
         return column()
 
@@ -69,8 +106,14 @@ class WorkDetailTable(BaseTableDto):
         return column()
 
     @staticmethod
-    @tipKodu(TypeCode.String)
-    @column_search
     @kolonIsmiAttribute("Sipariş Tipi")
-    def order_type():
+    @tipKodu(TypeCode.String)
+    def type():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
+    @birincilAnahtarAttribute
+    @kolonIsmiAttribute("Ürünler")
+    def products():
         return column()

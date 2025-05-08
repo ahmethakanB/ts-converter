@@ -7,13 +7,3 @@ export interface Column {
   kolonAttributelar?: { [key: string]: any };
   [key: string]: any;
 }
-export interface FormField {
-  field: string;
-  label: string;
-  type: string;
-  required?: boolean;
-  disabled?: boolean;
-  formAttributes?: { [key: string]: any };
-  [key: string]: any;
-  api?: any;
-}

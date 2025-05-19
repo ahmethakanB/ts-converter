@@ -10,7 +10,7 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
         many=True
     )
 
-    #TODO Burada Fazlalık İse Kaldır
+    # TODO Burada Fazlalık İse Kaldır
     def __init__(self, *args, **kwargs):
         request = kwargs.get('context', {}).get('request')
         if request is not None and hasattr(request, '_odata_select'):
@@ -18,7 +18,7 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
         super().__init__(*args, **kwargs)
 
     class Meta:
-        model  = Order
+        model = Order
         fields = (
             'id',
             'name',
@@ -27,6 +27,7 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
             'start_datetime',
             'end_datetime',
         )
+
 
 class ProductSerializer(DynamicFieldsModelSerializer):
     class Meta:
@@ -49,6 +50,7 @@ class OrderTypeSerializer(DynamicFieldsModelSerializer):
             'id',
             'name',
         )
+
 
 class CreateOrder(DynamicFieldsModelSerializer):
     """CreateAPIView için kullanılır."""

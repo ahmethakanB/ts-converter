@@ -1,5 +1,6 @@
-from rest_framework.filters import BaseFilterBackend
 from odata_query.django import apply_odata_query
+from rest_framework.filters import BaseFilterBackend
+
 
 class ODataFilterBackend(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):

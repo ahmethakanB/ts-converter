@@ -1,8 +1,10 @@
 from typing import Dict
 
+
 def _ensure_attrs(col: Dict) -> Dict:
     col.setdefault("tableAttributes", {})
     return col["tableAttributes"]
+
 
 def column(*args, **extra) -> Dict:
     """
@@ -15,6 +17,7 @@ def column(*args, **extra) -> Dict:
     }
     base.update(extra)
     return base
+
 
 def field(title: str, **extra) -> Dict:
     """

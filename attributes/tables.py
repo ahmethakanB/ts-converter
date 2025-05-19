@@ -1,8 +1,7 @@
 from typing import List, Dict
 
 from attributes.dsl import column
-from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincilAnahtarAttribute, \
-    kolonAlanSecimEtiketAttribute
+from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincilAnahtarAttribute
 from attributes.flags.table_root import tipKodu
 from attributes.flags.typecodes import TypeCode
 from core.models import Order, Product, OrderType
@@ -29,6 +28,7 @@ class BaseTableDto:
                 cols.append(data)
 
         return cols
+
 
 class WorkDetailTable(BaseTableDto):
     class Meta:
@@ -70,6 +70,7 @@ class WorkDetailTable(BaseTableDto):
     @kolonIsmiAttribute("Bitiş Zamanı")
     def end_datetime():
         return column()
+
 
 class OrderTable(BaseTableDto):
     class Meta:
@@ -118,6 +119,7 @@ class OrderTable(BaseTableDto):
     def products():
         return column()
 
+
 class OrderTypeTable(BaseTableDto):
     class Meta:
         model = OrderType
@@ -134,6 +136,7 @@ class OrderTypeTable(BaseTableDto):
     @kolonIsmiAttribute("Sipariş Adı")
     def name():
         return column()
+
 
 class ProductTable(BaseTableDto):
     class Meta:
@@ -164,6 +167,7 @@ class ProductTable(BaseTableDto):
     def stock():
         return column()
 
+
 class CreateOrder(BaseTableDto):
     class Meta:
         model = Order
@@ -192,6 +196,7 @@ class CreateOrder(BaseTableDto):
     def products():
         return column()
 
+
 class DeleteOrder(BaseTableDto):
     class Meta:
         model = Order
@@ -201,6 +206,7 @@ class DeleteOrder(BaseTableDto):
     @kolonIsmiAttribute("Sipariş Adı")
     def id():
         return column()
+
 
 class UpdateOrder(BaseTableDto):
     class Meta:

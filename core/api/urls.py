@@ -1,8 +1,8 @@
 from django.urls import (
     path,
 )
-
 from rest_framework.routers import DefaultRouter
+
 from core.api.views import OrderDetailViewSet, ProductAPI, OrderTypeAPI, DeleteOrderAPI, CreateOrderAPI
 
 router = DefaultRouter()

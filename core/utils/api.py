@@ -6,6 +6,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     A ModelSerializer which takes an optional `fields` argument (a list/tuple of
     field names) and only keeps those fields.
     """
+
     def __init__(self, *args, **kwargs):
         # 1) pop off our custom `fields` kwarg (if any)
         fields = kwargs.pop('fields', None)

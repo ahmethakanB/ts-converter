@@ -311,10 +311,10 @@ def export_typeInformation() -> list[str]:
             for attr in dir(mod):
                 cls = getattr(mod, attr)
                 if (
-                    inspect.isclass(cls)
-                    and issubclass(cls, BaseSerializer)
-                    and cls is not BaseSerializer
-                    and hasattr(cls, "Meta")
+                        inspect.isclass(cls)
+                        and issubclass(cls, BaseSerializer)
+                        and cls is not BaseSerializer
+                        and hasattr(cls, "Meta")
                 ):
                     name = cls.__name__
                     if name in seen:
@@ -343,12 +343,9 @@ def export_api_configs() -> list[str]:
     Sadece READ (GET) endpoint’lerini üretir.
     CREATE / UPDATE / DELETE endpoint’leri komut dosyasına taşındı.
     """
-    import inspect
-    from importlib import import_module
     from django.urls import URLPattern
     from rest_framework.views import APIView
     from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView
-    from rest_framework.routers import DefaultRouter
     from core.api.urls import urlpatterns, router
 
     lines: list[str] = [
@@ -389,14 +386,14 @@ def export_api_configs() -> list[str]:
             continue
         view_cls = getattr(entry.callback, "view_class", None)
         if (
-            not view_cls
-            or not issubclass(view_cls, APIView)
-            or view_cls.__name__ == "APIRootView"
-            or issubclass(view_cls, (CreateAPIView, UpdateAPIView, DestroyAPIView))
+                not view_cls
+                or not issubclass(view_cls, APIView)
+                or view_cls.__name__ == "APIRootView"
+                or issubclass(view_cls, (CreateAPIView, UpdateAPIView, DestroyAPIView))
         ):
             continue
 
-        key   = view_cls.__name__[0].lower() + view_cls.__name__[1:]
+        key = view_cls.__name__[0].lower() + view_cls.__name__[1:]
         route = "/" + entry.pattern._route.strip("/")
 
         # GET endpoint
@@ -407,7 +404,7 @@ def export_api_configs() -> list[str]:
         if viewset_cls.__name__ == "APIRootView":
             continue
 
-        key   = prefix.replace("-", "")
+        key = prefix.replace("-", "")
         route = f"/{prefix}/"
         # ViewSet’ten list endpoint (GET) olarak kaydediyoruz
         lines += make_entry(key, route, viewset_cls, "GET", True)
@@ -415,13 +412,12 @@ def export_api_configs() -> list[str]:
     lines.append("};")
     return lines
 
+
 def export_command_configs() -> list[str]:
     """
     Create/Update/Delete endpoint’leri için komut akış yapılandırması üretir.
     Her view_class içinde tanımlı `table_dto` özniteliğini öncelikli olarak kullanır.
     """
-    import inspect
-    from importlib import import_module
     from django.urls import URLPattern
     from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView
     from core.api.urls import urlpatterns

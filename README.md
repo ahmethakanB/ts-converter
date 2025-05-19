@@ -1,3 +1,5 @@
 # ts-converter
+
 Yapılacak Çalışmalar
- - Genel mimari ve genişletilebilirlik
+
+- Genel mimari ve genişletilebilirlik

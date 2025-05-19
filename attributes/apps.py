@@ -26,6 +26,7 @@ class AttributesConfig(AppConfig):
         if target_dir.exists():
             shutil.rmtree(target_dir)
 
+        export_all_ts(target_dir)
         try:
             export_all_ts(target_dir)
         except Exception as exc:

@@ -1,12 +1,13 @@
-import { typeInformation } from './models';
+import { typeInformation } from './tables';
+
 export const apiConfigs = {
   productAPI: {
     link         : '/get-product',
     metot        : 'GET',
     sorguIsim    : 'ProductAPI',
     queryable    : true,
-    dtoTipId     : 'Product',
-    dtoTipBilgi  : typeInformation.Product,
+    dtoTipId     : 'ProductTable',
+    dtoTipBilgi  : typeInformation.ProductTable,
     sorguTipId   : 'ProductSerializer',
     sorguTipBilgi: typeInformation.ProductSerializer,
   },
@@ -15,29 +16,19 @@ export const apiConfigs = {
     metot        : 'GET',
     sorguIsim    : 'OrderTypeAPI',
     queryable    : true,
-    dtoTipId     : 'OrderType',
-    dtoTipBilgi  : typeInformation.OrderType,
+    dtoTipId     : 'ProductTable',
+    dtoTipBilgi  : typeInformation.ProductTable,
     sorguTipId   : 'ProductSerializer',
     sorguTipBilgi: typeInformation.ProductSerializer,
   },
-  deleteOrderAPI: {
-    link         : '/delete-order',
-    metot        : 'DELETE',
-    sorguIsim    : 'DeleteOrderAPI',
-    queryable    : false,
-    dtoTipId     : 'Order',
-    dtoTipBilgi  : typeInformation.Order,
-    sorguTipId   : 'OrderSerializer',
-    sorguTipBilgi: typeInformation.OrderSerializer,
-  },
-  createOrderAPI: {
-    link         : '/create-order',
-    metot        : 'POST',
-    sorguIsim    : 'CreateOrderAPI',
-    queryable    : false,
-    dtoTipId     : 'Order',
-    dtoTipBilgi  : typeInformation.Order,
-    sorguTipId   : 'OrderSerializer',
-    sorguTipBilgi: typeInformation.OrderSerializer,
+  orderdetails: {
+    link         : '/order-details/',
+    metot        : 'GET',
+    sorguIsim    : 'OrderDetailViewSet',
+    queryable    : true,
+    dtoTipId     : 'WorkDetailTable',
+    dtoTipBilgi  : typeInformation.WorkDetailTable,
+    sorguTipId   : 'OrderDetailSerializer',
+    sorguTipBilgi: typeInformation.OrderDetailSerializer,
   },
 };

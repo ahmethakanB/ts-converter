@@ -70,32 +70,38 @@ export interface Order {
   products: Product[];
 }
 
+export interface CreateOrder {
+  name: "coreLib_String";
+  products: "any";
+  type: "any";
+  start_datetime: "coreLib_DateTime";
+  end_datetime: "coreLib_DateTime";
+}
+export interface OrderDetailSerializer {
+  id?: "coreLib_Int32";
+  name: "coreLib_String";
+  products: "any";
+  type: "any";
+  start_datetime: "coreLib_DateTime";
+  end_datetime: "coreLib_DateTime";
+}
 export interface OrderTypeSerializer {
-  id?: coreLib_Int32;
-  name: coreLib_String;
+  id?: "coreLib_Int32";
+  name: "coreLib_String";
 }
 export interface ProductSerializer {
-  id?: coreLib_Int32;
-  name: coreLib_String;
-  description?: coreLib_String;
-  price: coreLib_Decimal;
-  stock: coreLib_Int32;
-  is_dismantling?: coreLib_Boolean;
-  is_plannable?: coreLib_Boolean;
+  id?: "coreLib_Int32";
+  name: "coreLib_String";
+  description?: "coreLib_String";
+  price: "coreLib_Decimal";
+  stock: "coreLib_Int32";
+  is_dismantling?: "coreLib_Boolean";
+  is_plannable?: "coreLib_Boolean";
 }
-
-export const typeInformation = {
-  LogEntry: { tipIsmi: "LogEntry" },
-  Permission: { tipIsmi: "Permission" },
-  Group: { tipIsmi: "Group" },
-  User: { tipIsmi: "User" },
-  ContentType: { tipIsmi: "ContentType" },
-  Session: { tipIsmi: "Session" },
-  Product: { tipIsmi: "Product" },
-  OrderType: { tipIsmi: "OrderType" },
-  Order: { tipIsmi: "Order" },
-  OrderDetailSerializer: { tipIsmi: "OrderDetailSerializer" },
-  OrderSerializer: { tipIsmi: "OrderSerializer" },
-  OrderTypeSerializer: { tipIsmi: "OrderTypeSerializer" },
-  ProductSerializer: { tipIsmi: "ProductSerializer" },
-};
+export interface UpdateOrder {
+  name: "coreLib_String";
+  products?: "any";
+  type: "any";
+  start_datetime: "coreLib_DateTime";
+  end_datetime: "coreLib_DateTime";
+}

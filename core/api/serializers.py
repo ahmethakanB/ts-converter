@@ -28,21 +28,6 @@ class OrderDetailSerializer(DynamicFieldsModelSerializer):
             'end_datetime',
         )
 
-    def create(self, validated_data):
-        products = validated_data.pop("products", [])
-        order = Order.objects.create(**validated_data)
-        order.products.set(products)
-        return order
-
-    def update(self, instance, validated_data):
-        products = validated_data.pop("products", None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        if products is not None:
-            instance.products.set(products)
-        return instance
-
 class ProductSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Product
@@ -56,6 +41,7 @@ class ProductSerializer(DynamicFieldsModelSerializer):
             'is_plannable',
         )
 
+
 class OrderTypeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = OrderType
@@ -64,21 +50,58 @@ class OrderTypeSerializer(DynamicFieldsModelSerializer):
             'name',
         )
 
-class OrderSerializer(DynamicFieldsModelSerializer):
-    order_type = serializers.CharField(source="type.name", read_only=True)
+class CreateOrder(DynamicFieldsModelSerializer):
+    """CreateAPIView için kullanılır."""
     products = serializers.PrimaryKeyRelatedField(
         queryset=Order.products.rel.model.objects.all(),
         many=True
     )
 
     class Meta:
-        model  = Order
+        model = Order
         fields = (
-            'id',
             'name',
             'products',
             'type',
             'start_datetime',
             'end_datetime',
-            'order_type',
         )
+
+    def create(self, validated_data):
+        products = validated_data.pop("products", [])
+        order = Order.objects.create(**validated_data)
+        order.products.set(products)
+        return order
+
+
+class UpdateOrder(DynamicFieldsModelSerializer):
+    """UpdateAPIView için kullanılır."""
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Order.products.rel.model.objects.all(),
+        many=True,
+        required=False,
+    )
+
+    class Meta:
+        model = Order
+        fields = (
+            'name',
+            'products',
+            'type',
+            'start_datetime',
+            'end_datetime',
+        )
+
+    def update(self, instance, validated_data):
+        products = validated_data.pop("products", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if products is not None:
+            instance.products.set(products)
+        return instance
+
+
+class DeleteOrder(serializers.Serializer):
+    """DestroyAPIView için, genellikle payload almaz."""
+    pass

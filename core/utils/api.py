@@ -3,20 +3,19 @@ from rest_framework import serializers
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
-    A ModelSerializer that takes an additional `fields` argument that
-    controls which fields should be displayed.
+    A ModelSerializer which takes an optional `fields` argument (a list/tuple of
+    field names) and only keeps those fields.
     """
-
     def __init__(self, *args, **kwargs):
-        # Don't pass the 'fields' arg up to the superclass
+        # 1) pop off our custom `fields` kwarg (if any)
         fields = kwargs.pop('fields', None)
 
-        # Instantiate the superclass normally
-        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+        # 2) run DRF's normal __init__, which will populate self.fields
+        super().__init__(*args, **kwargs)
 
+        # 3) if the user passed a `fields` list, drop any fields not in it
         if fields is not None:
-            # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)
-            existing = set(self.fields.keys())
-            for field_name in existing - allowed:
-                self.fields.pop(field_name)
+            for field_name in list(self.fields.keys()):
+                if field_name not in allowed:
+                    self.fields.pop(field_name)

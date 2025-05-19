@@ -5,7 +5,7 @@ from attributes.flags.custom_table_attribute import kolonIsmiAttribute, birincil
     kolonAlanSecimEtiketAttribute
 from attributes.flags.table_root import tipKodu
 from attributes.flags.typecodes import TypeCode
-from core.models import Order
+from core.models import Order, Product, OrderType
 
 
 class BaseTableDto:
@@ -71,7 +71,7 @@ class WorkDetailTable(BaseTableDto):
     def end_datetime():
         return column()
 
-class OrderTableDto(BaseTableDto):
+class OrderTable(BaseTableDto):
     class Meta:
         model = Order
 
@@ -114,6 +114,118 @@ class OrderTableDto(BaseTableDto):
     @staticmethod
     @tipKodu(TypeCode.Int32)
     @birincilAnahtarAttribute
+    @kolonIsmiAttribute("Ürünler")
+    def products():
+        return column()
+
+class OrderTypeTable(BaseTableDto):
+    class Meta:
+        model = OrderType
+
+    @staticmethod
+    @birincilAnahtarAttribute
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("ID")
+    def id():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Sipariş Adı")
+    def name():
+        return column()
+
+class ProductTable(BaseTableDto):
+    class Meta:
+        model = Product
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("ID")
+    @birincilAnahtarAttribute
+    def id():
+        return column()
+
+    @staticmethod
+    @kolonIsmiAttribute("Ürün Adı")
+    @tipKodu(TypeCode.String)
+    def name():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("Fiyat")
+    def price():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("Stok")
+    def stock():
+        return column()
+
+class CreateOrder(BaseTableDto):
+    class Meta:
+        model = Order
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Sipariş Adı")
+    def name():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Açıklama")
+    def description():
+        return column()
+
+    @staticmethod
+    @kolonIsmiAttribute("Sipariş Tipi")
+    @tipKodu(TypeCode.String)
+    def type():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
+    @kolonIsmiAttribute("Ürünler")
+    def products():
+        return column()
+
+class DeleteOrder(BaseTableDto):
+    class Meta:
+        model = Order
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Sipariş Adı")
+    def id():
+        return column()
+
+class UpdateOrder(BaseTableDto):
+    class Meta:
+        model = Order
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Sipariş Adı")
+    def name():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.String)
+    @kolonIsmiAttribute("Açıklama")
+    def description():
+        return column()
+
+    @staticmethod
+    @kolonIsmiAttribute("Sipariş Tipi")
+    @tipKodu(TypeCode.String)
+    def type():
+        return column()
+
+    @staticmethod
+    @tipKodu(TypeCode.Int32)
     @kolonIsmiAttribute("Ürünler")
     def products():
         return column()
